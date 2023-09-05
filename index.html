@@ -21,6 +21,7 @@
         let timerInterval;
         let startTime = 0;
         let isRunning = false;
+        let pausedTime = 0;
 
         const timerElement = document.getElementById('timer');
         const equivalentElement = document.getElementById('equivalent');
@@ -29,7 +30,7 @@
 
         function updateTimer() {
             const currentTime = new Date().getTime();
-            const elapsedTime = currentTime - startTime;
+            const elapsedTime = (currentTime - startTime) + pausedTime;
             const seconds = Math.floor((elapsedTime / 1000) % 60);
             const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
             const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
@@ -43,8 +44,9 @@
             if (isRunning) {
                 clearInterval(timerInterval);
                 startStopButton.textContent = 'Продолжить';
+                pausedTime += new Date().getTime() - startTime;
             } else {
-                startTime = new Date().getTime() - (startTime ? startTime - startTime : 0);
+                startTime = new Date().getTime() - (pausedTime ? pausedTime : 0);
                 timerInterval = setInterval(updateTimer, 1000);
                 startStopButton.textContent = 'Стоп';
             }
@@ -58,6 +60,7 @@
             startStopButton.textContent = 'Старт';
             isRunning = false;
             startTime = 0;
+            pausedTime = 0;
         });
     </script>
 </body>
