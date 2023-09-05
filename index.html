@@ -22,24 +22,37 @@
   let startTime = 0;
   let intervalId;
   let isRunning = false;
+  let isPaused = false;
 
   function startStopTimer() {
     if (isRunning) {
-      stopTimer();
-      document.querySelector("button").innerText = "Старт";
+      if (isPaused) {
+        startTimer();
+        document.querySelector("button").innerText = "Стоп";
+      } else {
+        pauseTimer();
+        document.querySelector("button").innerText = "Продолжить";
+      }
     } else {
       startTimer();
       document.querySelector("button").innerText = "Стоп";
     }
     isRunning = !isRunning;
+    isPaused = !isPaused;
   }
 
   function startTimer() {
-    startTime = Date.now() - (startTime > 0 ? startTime : 0);
-    intervalId = setInterval(updateTimer, 1000);
+    if (!isRunning) {
+      if (isPaused) {
+        startTime = Date.now() - (startTime > 0 ? startTime : 0);
+      } else {
+        startTime = Date.now();
+      }
+      intervalId = setInterval(updateTimer, 1000);
+    }
   }
 
-  function stopTimer() {
+  function pauseTimer() {
     clearInterval(intervalId);
   }
 
@@ -49,6 +62,7 @@
     updateTimer();
     document.querySelector("button").innerText = "Старт";
     isRunning = false;
+    isPaused = false;
   }
 
   function updateTimer() {
