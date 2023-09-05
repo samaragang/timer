@@ -1,78 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-  #timer {
-    font-size: 36px;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #timer {
+            font-size: 2em;
+        }
+    </style>
 </head>
 <body>
-<div>
-  <h1>Секундомер</h1>
-  <div id="timer">00:00:00</div>
-  <div>Время в часах: <span id="hours">0.00</span></div>
-  <button onclick="startStopTimer()">Старт</button>
-  <button onclick="resetTimer()">Сбросить</button>
-</div>
+    <div id="timer">00:00:00</div>
+    <div id="equivalent">0.00 ч</div>
+    <button id="startStop">Старт</button>
+    <button id="reset">Сбросить</button>
 
-<script>
-  let startTime = 0;
-  let intervalId;
-  let isRunning = false;
-  let isPaused = false;
+    <script>
+        let timerInterval;
+        let startTime = 0;
+        let isRunning = false;
 
-  function startStopTimer() {
-    if (isRunning) {
-      if (isPaused) {
-        startTimer();
-        document.querySelector("button").innerText = "Стоп";
-      } else {
-        pauseTimer();
-        document.querySelector("button").innerText = "Продолжить";
-      }
-    } else {
-      startTimer();
-      document.querySelector("button").innerText = "Стоп";
-    }
-    isRunning = !isRunning;
-    isPaused = !isPaused;
-  }
+        const timerElement = document.getElementById('timer');
+        const equivalentElement = document.getElementById('equivalent');
+        const startStopButton = document.getElementById('startStop');
+        const resetButton = document.getElementById('reset');
 
-  function startTimer() {
-    if (!isRunning) {
-      startTime = Date.now() - (startTime > 0 ? startTime : 0);
-      intervalId = setInterval(updateTimer, 1000);
-    }
-  }
+        function updateTimer() {
+            const currentTime = new Date().getTime();
+            const elapsedTime = currentTime - startTime;
+            const seconds = Math.floor((elapsedTime / 1000) % 60);
+            const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+            const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
+            const equivalentHours = (elapsedTime / (1000 * 60 * 60)).toFixed(2);
 
-  function pauseTimer() {
-    clearInterval(intervalId);
-  }
+            timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            equivalentElement.textContent = `${equivalentHours} ч`;
+        }
 
-  function resetTimer() {
-    clearInterval(intervalId);
-    startTime = 0;
-    updateTimer();
-    document.querySelector("button").innerText = "Старт";
-    isRunning = false;
-    isPaused = false;
-  }
+        startStopButton.addEventListener('click', function () {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startStopButton.textContent = 'Продолжить';
+            } else {
+                startTime = new Date().getTime() - (startTime ? startTime - startTime : 0);
+                timerInterval = setInterval(updateTimer, 1000);
+                startStopButton.textContent = 'Стоп';
+            }
+            isRunning = !isRunning;
+        });
 
-  function updateTimer() {
-    const currentTime = Date.now() - startTime;
-    const seconds = Math.floor(currentTime / 1000) % 60;
-    const minutes = Math.floor(currentTime / 1000 / 60) % 60;
-    const hours = Math.floor(currentTime / 1000 / 60 / 60);
-
-    document.getElementById("timer").innerText = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    
-    // Вычисляем время в часах и обновляем его
-    const timeInHours = currentTime / 1000 / 60 / 60;
-    document.getElementById("hours").innerText = timeInHours.toFixed(2);
-  }
-</script>
+        resetButton.addEventListener('click', function () {
+            clearInterval(timerInterval);
+            timerElement.textContent = '00:00:00';
+            equivalentElement.textContent = '0.00 ч';
+            startStopButton.textContent = 'Старт';
+            isRunning = false;
+            startTime = 0;
+        });
+    </script>
 </body>
 </html>
