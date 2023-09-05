@@ -43,11 +43,7 @@
 
   function startTimer() {
     if (!isRunning) {
-      if (isPaused) {
-        startTime = Date.now() - (startTime > 0 ? startTime : 0);
-      } else {
-        startTime = Date.now();
-      }
+      startTime = Date.now() - (startTime > 0 ? startTime : 0);
       intervalId = setInterval(updateTimer, 1000);
     }
   }
