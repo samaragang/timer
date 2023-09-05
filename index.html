@@ -1,67 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секундомер</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        #timer-container {
             text-align: center;
         }
-        #timer {
-            font-size: 2em;
+        #time-display {
+            font-size: 48px;
+        }
+        #equivalent-time {
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
-    <div id="timer">00:00:00</div>
-    <div id="equivalent">0.00 ч</div>
-    <button id="startStop">Старт</button>
-    <button id="reset">Сбросить</button>
+    <div id="timer-container">
+        <div id="time-display">00:00:00</div>
+        <div id="equivalent-time">0.00 часа</div>
+        <button id="start-stop">Старт</button>
+        <button id="reset">Сбросить</button>
+    </div>
 
     <script>
-        let timerInterval;
-        let startTime = 0;
+        let startTime;
+        let interval;
         let isRunning = false;
-        let pausedTime = 0;
 
-        const timerElement = document.getElementById('timer');
-        const equivalentElement = document.getElementById('equivalent');
-        const startStopButton = document.getElementById('startStop');
+        const timeDisplay = document.getElementById('time-display');
+        const equivalentTimeDisplay = document.getElementById('equivalent-time');
+        const startStopButton = document.getElementById('start-stop');
         const resetButton = document.getElementById('reset');
 
-        function updateTimer() {
-            const currentTime = new Date().getTime();
-            const elapsedTime = (currentTime - startTime) + pausedTime;
-            const seconds = Math.floor((elapsedTime / 1000) % 60);
-            const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
-            const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
-            const equivalentHours = (elapsedTime / (1000 * 60 * 60)).toFixed(2);
+        startStopButton.addEventListener('click', function() {
+            if (!isRunning) {
+                startTimer();
+            } else {
+                stopTimer();
+            }
+        });
 
-            timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            equivalentElement.textContent = `${equivalentHours} ч`;
+        resetButton.addEventListener('click', function() {
+            resetTimer();
+        });
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                startStopButton.textContent = 'Стоп';
+                startTime = new Date() - (startTime || 0);
+                interval = setInterval(updateTimer, 1000);
+            }
         }
 
-        startStopButton.addEventListener('click', function () {
+        function stopTimer() {
             if (isRunning) {
-                clearInterval(timerInterval);
+                isRunning = false;
                 startStopButton.textContent = 'Продолжить';
-                pausedTime += new Date().getTime() - startTime;
-            } else {
-                startTime = new Date().getTime() - (pausedTime ? pausedTime : 0);
-                timerInterval = setInterval(updateTimer, 1000);
-                startStopButton.textContent = 'Стоп';
+                clearInterval(interval);
             }
-            isRunning = !isRunning;
-        });
+        }
 
-        resetButton.addEventListener('click', function () {
-            clearInterval(timerInterval);
-            timerElement.textContent = '00:00:00';
-            equivalentElement.textContent = '0.00 ч';
-            startStopButton.textContent = 'Старт';
+        function resetTimer() {
             isRunning = false;
-            startTime = 0;
-            pausedTime = 0;
-        });
+            startStopButton.textContent = 'Старт';
+            clearInterval(interval);
+            startTime = null;
+            updateTimer();
+        }
+
+        function updateTimer() {
+            const currentTime = new Date() - (startTime || 0);
+            const hours = Math.floor(currentTime / 3600000);
+            const minutes = Math.floor((currentTime % 3600000) / 60000);
+            const seconds = Math.floor((currentTime % 60000) / 1000);
+            const equivalentHours = (currentTime / 3600000).toFixed(2);
+
+            const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            timeDisplay.textContent = timeString;
+            equivalentTimeDisplay.textContent = equivalentHours + ' часа';
+        }
     </script>
 </body>
 </html>
