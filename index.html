@@ -14,14 +14,25 @@
   <h1>Секундомер</h1>
   <div id="timer">00:00:00</div>
   <div>Время в часах: <span id="hours">0.00</span></div>
-  <button onclick="startTimer()">Старт</button>
-  <button onclick="stopTimer()">Стоп</button>
+  <button onclick="startStopTimer()">Старт</button>
   <button onclick="resetTimer()">Сбросить</button>
 </div>
 
 <script>
   let startTime = 0;
   let intervalId;
+  let isRunning = false;
+
+  function startStopTimer() {
+    if (isRunning) {
+      stopTimer();
+      document.querySelector("button").innerText = "Старт";
+    } else {
+      startTimer();
+      document.querySelector("button").innerText = "Стоп";
+    }
+    isRunning = !isRunning;
+  }
 
   function startTimer() {
     startTime = Date.now() - (startTime > 0 ? startTime : 0);
@@ -36,6 +47,8 @@
     clearInterval(intervalId);
     startTime = 0;
     updateTimer();
+    document.querySelector("button").innerText = "Старт";
+    isRunning = false;
   }
 
   function updateTimer() {
