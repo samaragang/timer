@@ -78,16 +78,18 @@ function updateDisplay() {
     const hours = Math.floor(elapsedTime / 3600);
     const minutes = Math.floor((elapsedTime % 3600) / 60);
     const seconds = Math.floor(elapsedTime % 60);
+    const hundredths = Math.floor((elapsedTime * 100) % 100); // Добавлено для отображения сотых
+
     const decimalHours = elapsedTime / 3600;
 
     display1.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    display2.textContent = decimalHours.toFixed(1);
+    display2.textContent = `${decimalHours.toFixed(1)}.${String(hundredths).padStart(2, '0')}`; // Отображение до сотых
 }
 
 startButton.addEventListener('click', () => {
     if (!running) {
         startTime = new Date().getTime() - (parseFloat(display2.textContent) * 3600 * 1000);
-        intervalId = setInterval(updateDisplay, 1000);
+        intervalId = setInterval(updateDisplay, 10); // Увеличено обновление до 10 миллисекунд для сотых долей
         running = true;
     }
 });
@@ -102,7 +104,7 @@ stopButton.addEventListener('click', () => {
 resetButton.addEventListener('click', () => {
     if (!running) {
         display1.textContent = '00:00:00';
-        display2.textContent = '0.0';
+        display2.textContent = '0.00'; // Изменено на 0.00 для сотых долей
     }
 });
 
