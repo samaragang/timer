@@ -60,6 +60,7 @@
                 isRunning = false;
                 startStopButton.textContent = 'Продолжить';
                 clearInterval(interval);
+                startTime = new Date() - startTime;
             }
         }
 
